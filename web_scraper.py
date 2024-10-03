@@ -17,35 +17,28 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 def download_webpages(cursor, table_name, professor_id, project_directory, search_depth=1):
     # Get professor details
     cursor.execute(f"""
-        SELECT "Professor", "Webpage" FROM "{table_name}" WHERE "ID" = ?
+        SELECT "Professor", "Website" FROM "{table_name}" WHERE "ID" = ?
     """, (professor_id,))
     result = cursor.fetchone()
     if not result:
         logging.error(f"No professor found with ID {professor_id}")
         return
-    professor_name, webpage_url = result
-    logging.info(f"Starting to download webpages for {professor_name} from {webpage_url}")
-    
+    professor_name, website_url = result
+
     # Create directory
     safe_professor_name = ''.join(c if c.isalnum() else '_' for c in professor_name)
     professor_dir = os.path.join(project_directory, 'data', safe_professor_name)
     os.makedirs(professor_dir, exist_ok=True)
-    logging.info(f"Data directory created at {professor_dir}")
 
     # Start downloading
     visited_urls = set()
-    to_visit = [(webpage_url, 0)]
+    to_visit = [(website_url, 0)]
     allowed_tlds = {'edu', 'org', 'ac', 'net', 'gov', 'uk', 'ca', 'au'}  # Add other TLDs as needed
 
     def download_page(current_url, depth):
-        if current_url in visited_urls:
-            logging.debug(f"Already visited {current_url}")
-            return
-        if depth > search_depth:
-            logging.debug(f"Maximum search depth reached for {current_url}")
+        if current_url in visited_urls or depth > search_depth:
             return
         visited_urls.add(current_url)
-        logging.info(f"Downloading {current_url} at depth {depth}")
         try:
             response = requests.get(current_url, timeout=10)
             if response.status_code == 200:
@@ -57,12 +50,10 @@ def download_webpages(cursor, table_name, professor_id, project_directory, searc
                     filename = os.path.join(professor_dir, f"file_{len(visited_urls)}.pdf")
                     with open(filename, 'wb') as f:
                         f.write(response.content)
-                    logging.info(f"Downloaded PDF: {filename}")
                 else:
                     filename = os.path.join(professor_dir, f"page_{len(visited_urls)}.html")
                     with open(filename, 'w', encoding='utf-8') as f:
                         f.write(response.text)
-                    logging.info(f"Downloaded HTML page: {filename}")
                     if depth < search_depth:
                         # Parse links
                         soup = BeautifulSoup(response.text, 'html.parser')
@@ -85,8 +76,6 @@ def download_webpages(cursor, table_name, professor_id, project_directory, searc
         current_url, depth = to_visit.pop(0)
         download_page(current_url, depth)
 
-    logging.info(f"Completed downloading webpages for {professor_name}")
-
     # Update chronology table
     today = (datetime.date.today() - datetime.date(1982, 4, 17)).days
     cursor.execute(f"""
@@ -95,4 +84,28 @@ def download_webpages(cursor, table_name, professor_id, project_directory, searc
         WHERE "ID" = ?
     """, (1, search_depth, today, professor_id))
     cursor.connection.commit()
-    logging.info(f"Chronology table updated for professor ID {professor_id}")
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Web Scraper Script')
+    parser.add_argument('-i', '--input', help='SQLite database file.')
+    parser.add_argument('-t', '--table-name', help='Name of the table in the database.')
+    parser.add_argument('-d', '--search-depth', type=int, help='Depth of the link search.')
+    parser.add_argument('-p', '--project-directory', help='Project directory for storing data.')
+    parser.add_argument('-pid', '--professor-id', type=int, required=True, help='Professor ID to scrape for.')
+    args = parser.parse_args()
+
+    db_file = args.input if args.input else DB_FILE
+    table_name = args.table_name if args.table_name else TABLE_NAME
+    project_directory = args.project_directory if args.project_directory else PROJECT_DIRECTORY
+    search_depth = args.search_depth if args.search_depth else SEARCH_DEPTH
+    professor_id = args.professor_id
+
+    conn = sqlite3.connect(db_file)
+    conn.execute('PRAGMA foreign_keys = ON;')
+    cursor = conn.cursor()
+
+    download_webpages(cursor, table_name, professor_id, project_directory, search_depth)
+
+    conn.close()
