@@ -1,0 +1,591 @@
+% compile with XeLaTeX
+
+\documentclass[letterpaper,11pt]{article} % Default font size and paper size
+
+
+% % % % % % % Calling packages % % % % % % %
+
+\usepackage[dvipsnames, table]{xcolor}
+\usepackage{xunicode,xltxtra,url,parskip,array} % Formatting packages
+\usepackage{fontawesome5} %for shapes like Envelope (\faEnvelope)
+\usepackage{changepage} %indentating whole of a parageraph
+\usepackage{fontspec} % For loading fonts
+\usepackage{fullpage}
+\usepackage{hyperref} % Required for adding links	and customizing them
+\usepackage{titlesec} % Used to customize the \section command
+\usepackage{fancyhdr}
+\usepackage{tabularx} % For tables with adjustable column width
+\usepackage{setspace} % For Line spacing
+\usepackage{hyperref} % Required for hyperlinks
+% \usepackage{textcomp} % Required for \textbeta
+\usepackage{fixltx2e} % for subscripts
+\usepackage{enumitem}
+		\setlist{nosep}
+% 		\setlist{itemsep=2pt, topsep=4pt}
+
+% % % % % % % excluded packages
+
+%\usepackage[backend=bibtex,style=verbose-trad2]{biblatex}
+\usepackage[left=2.5cm, right=2.5 cm, top=1.5cm , bottom=2cm]{geometry}
+%\usepackage[big]{layaureo} % Margin formatting of the A4 page, an alternative to layaureo can be
+
+
+
+
+
+% % % % % % % codes for each package % % % % % % % % % %
+
+
+% % % % % % % for xcolor
+\definecolor{mycolor}{HTML}{004F90}
+% \definecolor{linkcolour}{rgb}{0,0.2,0.6} % Link color
+\definecolor{linkcolour}{HTML}{004F90}
+\definecolor{mycolor_darker}{HTML}{07528a}
+
+% % % % % % % for fontspec
+\defaultfontfeatures{Mapping=tex-text}
+
+\setmainfont[SmallCapsFont = Fontin SmallCaps]{Fontin} % Main document font
+% \setmainfont{Linux Biolinum O} % Main document font
+% \setmainfont{Garamond}
+% \setmainfont{Helvetica}
+% \setmainfont{Georgia}
+% \setmainfont{Fontin}
+
+
+
+
+\newfontfamily\myname[LetterSpace=1.2,
+											Scale=1.25,
+											Color=mycolor,
+											]{GRENDEL}
+
+
+\newfontfamily\myheader[LetterSpace=1,
+											Scale=1,
+											Color=mycolor_darker,
+											]{GRENDEL}
+
+
+\newfontfamily\mytitle[LetterSpace=5,
+									Scale=1,
+									Color=mycolor,
+								]{GRENDEL}
+
+% \newfontfamily\bodyfont{Georgia}
+\newfontfamily\monofont[Scale=0.7]{Courier New Bold}
+
+
+
+
+% % % % % % % for titlesec
+\newcommand{\mytitlerule}{\color{mycolor}\titlerule[1.5pt]}
+
+\titleformat{\section}
+								{\Large\mytitle\scshape} % format of the title
+								{} % lable
+								{0em} %  space between title and lable
+								{} % befor the title code
+								[\mytitlerule] % after the title code
+\titlespacing{\section}{0pt}{8pt}{8pt} % Spacing around sections
+
+
+% \titleformat{\section}{\Large\scshape\raggedright{}{}{0em}{}[\titlerule] % Text formatting of sections
+
+
+
+% % % % % % % for other packages
+\hypersetup{colorlinks,breaklinks,urlcolor=linkcolour,linkcolor=linkcolour} % Set link colors throughout the  document
+
+
+
+% % % % % % % inactive commands
+% To reduce the height of the top margin uncomment:\addtolength{\voffset}{-1.3cm}
+%\bibliography{Ref}
+
+
+
+
+% % % % % % % for package fancyhdr
+
+\setlength{\headheight}{15pt}
+
+
+
+
+
+\begin{document}
+\thispagestyle{empty}
+
+\pagestyle{fancy}
+
+\fancyhead[H R]{{\large\myheader Ehsan Ghavimehr, M.D.}}
+\renewcommand{\headrulewidth}{0pt}
+
+% \pagenumbering{roman}
+\fancyfoot{}
+
+\raggedright
+% \setstretch{1.2}
+%----------------------------------------------------------------------------------------
+%	NAME AND CONTACT INFORMATION
+%----------------------------------------------------------------------------------------
+\renewcommand{\arraystretch}{1.5}
+
+\begin{centering}
+
+{\myname\Huge Ehsan Ghavimehr, M.D.}
+
+\vspace{3pt}
+\begin{adjustwidth}{-1cm}{-1cm}
+
+
+\begin{tabular}{l l l r}
+
+		 \textcolor{mycolor}{\faEnvelope[regular]} \space  \href{mailto:e.ghavimehr@gmail.com}{E.Ghavimehr@gmail.com}
+		 &
+		 \textcolor{mycolor}{\faPhone*} \space  \href{tel:+989352177258}{+98 (935) 217-7258}
+		&
+		\textcolor{mycolor}{\faGoogle} \space \href{https://scholar.google.com/citations?user=JMu5TZMAAAAJ\&hl=en\&oi=ao}{Google Scholar}
+		&
+		\textcolor{mycolor}{\faGlobeAmericas} \space \href{https://ghavimehr.com/cv}{Ghavimehr.com}
+
+		\\
+		\textcolor{mycolor}{\faEnvelope[regular]} \space  \href{mailto:ghavimehr@student.iautmu.ac.ir}{Ghavimehr@student.IAUTMU.ac.ir}
+		&
+		\textcolor{mycolor}{\faPhone*} \space  \href{tel:+17165080417}{+1 (716) 508-0417}
+		&
+		\textcolor{mycolor}{\faResearchgate} \space \href{https://www.researchgate.net/profile/Ehsan-Ghavimehr}{Ehsan Ghavimehr}
+		&
+		\textcolor{mycolor}{\faLinkedinIn} \space \href{https://www.linkedin.com/in/ghavimehr/}{Ghavimehr}
+\end{tabular}
+\end{adjustwidth}
+\end{centering}
+\vspace{3pt}
+
+
+\section{Education}
+\textbf{Medical Doctorate (M.D.)} \hfill \footnotesize{2022 -- 2023} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{itemize}
+ \item Tehran Medical Sciences, Islamic Azad University (IAUTMU) \footnotesize Top 1\textsuperscript{st} private medical school in Iran \normalsize
+ \item \textbf{GPA:} 3.37\textsubscript{ (WES)} \space \space (16.27 / 20.00) \space \space Top 5\textsuperscript{th} Percentile of faculty
+ \item \textbf{Thesis:} Evaluating the role of nitric oxide neurotransmitter on the reactivation of fear memory extinction in rat models of post-traumatic stress disorder (PTSD) \hfill \footnotesize Score: 18.00 (A)  \normalsize
+ \newline \footnotesize \textbf{Advisors:} Mohammad \textsc{Nasehi} Ph.D. \href{https://scholar.google.com/citations?hl=en\&user=fMArE4kAAAAJ}{Google Scholar \faExternalLink*}  \hfill  Mohammad-Reza  \textsc{Zarrindast} \href{https://scholar.google.com/citations?user=vuFnRv0AAAAJ\&hl=en\&oi=ao}{Google Scholar \faExternalLink*}
+ \normalsize
+\end{itemize}
+
+
+
+
+\section{Selected Courses}
+\footnotesize
+
+\begin{tabular}{c|c|c}
+
+
+\begin{tabular}{l >{\monofont}r}
+\textbf{Neuroscience Related} \\
+Neuroanatomy  & 19.25 (A) \\
+Neurology  & 19.00  (A) \\
+Psychology  & 19.00 (A) \\
+Psychiatry &  17.00 (A) \\
+Medical Statistics & 18.50 (A) \\
+\end{tabular}
+&
+
+
+\begin{tabular}{l >{\monofont}r}
+\textbf{Basic Science} \\
+Biophysics & 20.00 (A) \\
+Immunology & 19.75 (A) \\
+Physiology & 19.00 (A) \\
+Biochemistry & 18.50 (A) \\
+ Histology & 17.00 (A) \\
+\end{tabular}
+&
+\begin{tabular}{l >{\monofont}r}
+\textbf{Medical} \\
+Internal Medicine & 20.00 (A) \\
+Public Health & 20.00 (A) \\
+Emergency Medicine & 20.00 (A) \\
+Cardiology & 19.50 (A) \\
+Gynecology & 19.25 (A) \\
+\end{tabular}
+
+\end{tabular}
+
+
+\normalsize
+
+
+
+
+
+
+\section{Research Interests}
+\begin{tabular}{lll}
+%BEGIN_RESEARCH_INTEREST%
+[Your current Research Interest content]
+%END_RESEARCH_INTEREST%
+\end{tabular}
+
+
+\section{Research Experience}
+\textbf{Animal Lab, Institute for Cognitive Science Studies (\href{https://icss.ac.ir/en/}{ICSS})}
+\vspace{-0.5\baselineskip}
+\begin{itemize}
+\item Research conducted as part of my MD thesis. \hfill \footnotesize{2020 -- \textit{Present}} \normalsize
+\end{itemize}
+
+
+\textbf{\hypertarget{NRC}{Neuroscience Research Center} (\href{http://en.nrc.sbmu.ac.ir/}{NRC})}, at Shahid Beheshti University of Medical Sciences (\href{https://en.sbmu.ac.ir/}{SBMU})
+\vspace{-0.5\baselineskip}
+\begin{itemize}
+\item \textbf{Part-time Research Assistant (Paid)} \hfill \footnotesize{2022 -- \textit{Present}} \normalsize
+\item \hyperlink{art3}{See the article \faArrowAltCircleDown[regular]}
+\end{itemize}
+
+\textbf{Iranian Research Center for HIV/AIDS (\href{https://ircha.tums.ac.ir/home_eng}{IRCHA})}, at (\href{http://en.tums.ac.ir/en}{Tehran University of Medical Sciences})
+\vspace{-0.5\baselineskip}
+
+\begin{itemize}
+\item \textbf{Principal Investigator}  \hfill \footnotesize{2021 -- 2022} \normalsize
+\item Reviewing promising drug agents for COVID-19, with a focus on immunocompromised patients.
+\item \hyperlink{art2}{See the article \faArrowAltCircleDown[regular]}
+\end{itemize}
+
+\textbf{Medical Genomics Research Center}, at (\href{https://tms.iau.ir/en}{Tehran Medical Sciences, Islamic Azad University})
+\vspace{-0.5\baselineskip}
+\begin{itemize}
+\item \textbf{Part-time Research Assistant}  \hfill \footnotesize{2018 -- 2022} \normalsize
+\item \hyperlink{art1}{See the article \faArrowAltCircleDown[regular]} \& \hyperlink{art6}{\faArrowAltCircleDown[regular]}
+\end{itemize}
+
+\newpage
+
+\section{Publications}
+\large{Journal Articles} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{enumerate}
+
+\item \hypertarget{art1}{\textbf{“Genomic medicine on the frontier of precision medicine.”}} \hyperlink{Mandana}{Mandana Hasanzad \faArrowAltCircleDown[regular]}, Negar Sarhangi, Anoosh Naghavi, \underline{Ehsan Ghavimehr}, Fatemeh Khatami, Sima Ehsani Chimeh, Bagher Larijani, and Hamid Reza Aghaei Meybodi.  \textit{Journal of Diabetes \& Metabolic Disorders} 21, no. 1 (2022): 853-861.
+\href{https://doi.org/10.1007/s40200-021-00880-6}{\faExternalLink*}	 \hfill (Citations:8)
+
+\item \hypertarget{art2}{\textbf{“Safety and Ef\nolinebreak ficacy of Imatinib, Nilotinib, and Artesunate in COVID-19 Patients: A Systematic Review of Current Evidence.”}} \underline{E Ghavimehr}, A Zand, SA SeyedAlinaghi, A Karimi, H Zaferani Arani, P Mirzapour, Z Pashaei, E Mehraeen*, O Dadras. \textit{Anti-Infective Agents journal} 2024; 22(1) : e140723218761 .
+\href{https://dx.doi.org/10.2174/2211352521666230714160740}{\faExternalLink*}
+
+\item \hypertarget{art3}{\textbf{“Exposure to dif\nolinebreak ferent PM\textsubscript{2.5} extracts induces gliosis and changes behavior in male rats similar to autism spectrum disorders features.”}} M Rahmatinia, A Mohseni-Bandpei, F Khodagholi, MA Abdollahifar, M Amouei Torkmahalleh, M Hassani Moghaddam, PK Hopke, \underline{E Ghavimehr}, S Bazzazpour, A Shahsavani*.  \textit{Environmental Pollution} 2023 Oct 30;340(Pt 2):122804.
+\href{https://www.sciencedirect.com/science/article/abs/pii/S0269749123018067}{\faExternalLink*}  \hfill (Citations:2)
+\end{enumerate}
+
+\large{Book Translation} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{enumerate}
+
+\item \textbf{“Larsen's Human Embryology in Persian”} 5\textsuperscript{th} ed. \underline{E Ghavimehr}, S Dianati, P Sahranavard, S Abdi, MH Noori, S Movasaghi*. \textit{Royan Pazhouh Publication} 2018. ISBN: 978-600-408-529-8 \hfill (Founded by the Publisher)
+
+\item \textbf{“Essential Radiological Anatomy for medical students”} \underline{E Ghavimehr}, S Dianati, P Sahranavard, A Dorri, MA Ghandehari, ZN Sharifi*. \textit{Heydari Publication}. 2024. ISBN: 978-600-489-978-9 \hfill (Founded by the Publisher)
+
+\end{enumerate}
+
+\large{Under Preparation} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{enumerate}
+
+\item \hypertarget{art6}{\textit{[Submitted]} \textbf{“Influence of gestational and early-life exposure to fine particulate matter PM\textsubscript{2.5} on ASD-like behaviors in male rats.”}} M Rahmatinia, A Mohseni-Bandpei, F Khodagholi, MA Abdollahifar, M Amouei Torkmahalleh, M Hassani Moghaddam, PK Hopke, \textbf{E Ghavimehr}, A Shahsavani*.
+
+\item \hypertarget{art7}{\textbf{“Evaluating the role of nitric oxide neurotransmitter on the reactivation of fear memory extinction in rat models of post-traumatic stress disorder (PTSD).”}} \underline{E Ghavimehr}, P Sahranavard, \hyperlink{Nasehi}{M Nasehi \faArrowAltCircleDown[regular]}, \hyperlink{Zarrindast}{MR Zarrindast \faArrowAltCircleDown[regular]}.
+
+\item \textbf{Familial Fronto-temporal Dementia: Case Series with NGS Analysis.} \href{https://scholar.google.com/citations?hl=en\&user=Ox4mhgwAAAAJ}{S Shirvani-Rad}, \underline{E Ghavimehr}, \hyperlink{Arzaghi}{SM Arzaghi \faArrowAltCircleDown[regular]}*.
+
+\item \textbf{Interventions Targeting Loneliness in Autism Spectrum Disorder: Systematic Review} Shakiba, \underline{Ghavimehr}, Dorsa, Reza, \href{https://scholar.google.com/citations?hl=en\&user=W4-bYsgAAAAJ}{Memari}*.
+
+
+\end{enumerate}
+
+\section{Academic Projects}
+\textbf{Prenatal Nut Supplementation and Prosocial Behavior in Rats} \hfill \footnotesize{2022} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{itemize}
+\item Assisted with experimental design, behavioral assessments, brain tissue sampling, and statistical analysis
+\item Data was not significant.
+\item At \hyperlink{NRC}{NRC, SBMU \faArrowAltCircleUp[regular]}; Under the supervision of \href{https://scholar.google.com/citations?user=MtZcJ1EAAAAJ\&hl=en\&oi=ao}{Fariba Khodagholi, Ph.D.}
+\end{itemize}
+
+\textbf{Does Intranasal Oxytocin Enhance Spacial Memory in Rats Model of Alzheimer's Disease?} \hfill \footnotesize{2022} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{itemize}
+\item Involved in the induction of Alzheimer model using stereotaxic brain surgery and A-beta 37 injection, as well as behavioral assessments.
+\item At \hyperlink{NRC}{NRC, SBMU \faArrowAltCircleUp[regular]}; Under the supervision of \href{https://scholar.google.com/citations?user=MtZcJ1EAAAAJ\&hl=en\&oi=ao}{Fariba Khodagholi, Ph.D.}
+\end{itemize}
+
+\textbf{Systematic Reviews of Germ-line SNPs in Pituitary Tumors and Thyroid Cancers} \hfill \footnotesize{2018 -- 2022} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{itemize}
+\item Focused on SNPs related to personalized medicine.
+\item Responsibilities included article screening, data extraction, and quality control.
+\item At Medical Genomics Research Center, IAUTMU; Under the supervision of \hyperlink{Mandana}{Mandana Hasanzad, Ph.D. \faArrowAltCircleDown[regular]}
+\end{itemize}
+
+\textbf{In-silico Gene Finding Project for Diabetes Mellitus} \hfill \footnotesize{2015} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{itemize}
+\item Proposed Calcitonin Gene-Related Peptide (CGRP) as a potentially pathogenic protein, similar to Amylin (IAPP) using NCBI BLAST tool.
+\item Modeled beta-sheet aggregation structures of CGRP using mutation techniques from Amylin's oligomers (PDB codes: 2KAB, 3FTK) with COOT software.
+\item Performed Molecular Dynamics Simulations (MDS); findings suggested the modeled CGRP oligomers is not as stable as Amylin.
+\item Project submitted to the Kharazmi Awards and contributed to being recognized as a Top Student Researcher \hyperlink{Kharazmi}{\faArrowAltCircleDown[regular]}.
+\item Supervised by \href{https://scholar.google.com/citations?hl=en\&user=rAkrs70AAAAJ}{Mohammad Taghizadeh, Ph.D.}
+\end{itemize}
+
+\section{Interdisciplinary Training}
+
+\textbf{Biology}
+\vspace{-0.5\baselineskip}
+\begin{itemize}
+\item \textbf{Next Generation Sequencing (NGS) Analysis} 100-hour, \footnotesize Geniran Lab \hfill 2024 \normalsize
+	%\item[2021] \textbf{Human Odyssey}
+	%\newline Online attendance, Held by United of Iranian Biologists (\href{https://biocan.ir/}{BioCan}) \hfill{44 hours}
+
+	\item \textbf{Evolution: Definition and Challenges 2} a Winter School, \footnotesize \href{https://en.sbu.ac.ir/}{Shahid Beheshti University} \hfill 2019 \normalsize
+\end{itemize}
+
+\textbf{Computer Science}
+\vspace{-0.5\baselineskip}
+\begin{itemize}
+	\item \textbf{Python In Neuroscience and Cognitive Science}, \footnotesize Interdisciplinary Schools, by (\href{https://scholar.google.com/citations?user=8ccNIG8AAAAJ}{Arash Zare-sadegi}) \hfill 2021\normalsize
+
+	\item \textbf{Introduction to Python Programming}, \footnotesize Interdisciplinary Schools, by (\href{https://scholar.google.com/citations?user=8ccNIG8AAAAJ}{Arash Zare-sadegi}) \hfill 2021\normalsize
+\end{itemize}
+
+
+\textbf{Humanities}
+\vspace{-0.5\baselineskip}
+\begin{itemize}
+\item \textbf{Physicalism and its Critics}, \footnotesize \href{https://www.irip.ac.ir/en/home}{Iranian Research Institute of Philosophy} \hfill 2021 \normalsize
+\item  \textbf{Topics in Normativity}, \footnotesize \href{https://www.ipm.ac.ir/}{Institute for Research in Fundamental Sciences}, by \href{https://scholar.google.com/citations?user=0Gj1NrcAAAAJ&hl=en&oi=ao}{Hamid Vahid}  \hfill 2021\normalsize
+\item \textbf{Neuroscience, Cognitive Science, and Philosophy}, \footnotesize \href{https://en.sharif.edu/}{Sharif University of Technology} \hfill 2019 \normalsize
+\end{itemize}
+
+\textbf{Other}
+\vspace{-0.5\baselineskip} 
+\begin{itemize}
+\item \textbf{National Integrated Education Leadership Course}, \footnotesize \href{https://gsia.sums.ac.ir/}{Shiraz University of Medical Sciences} \hfill 2020 \normalsize
+\end{itemize}
+
+
+\section{Professional Experience}
+\textbf{Establishment of the First Online Genome Annotation Tool Based on Iranian Allele Frequency}
+\vspace{-0.5\baselineskip}
+\begin{itemize}
+ \item Available on \href{http://ngs.ghavimehr.com/}{NGS.Ghavimehr.com \faExternalLink*}
+ \item Based on Iranome database
+\end{itemize}
+
+\textbf{General medical practice} (part time) \hfill \footnotesize (Paid Jobs) \normalsize
+\vspace{-0.5\baselineskip}
+	\begin{itemize}
+	 \item \href{https://www.day-clinic.ir/}{DAY Psychiatric and Addiction Treatment Center \faExternalLink*} \hfill \footnotesize{2024 -- \textit{Present}} \normalsize
+	 \item RAHNAMA Nursing House for chronic psychiatric patients.  \hfill \footnotesize{2024} \normalsize
+	\end{itemize}
+
+\textbf{Medical Internship} \hfill \footnotesize{Mar 2022 -- Sep 2023} \normalsize
+
+\textbf{Student Division of Education Development Organization (EDO)} \hfill  \footnotesize (Paid Position) \normalsize
+\vspace{-0.5\baselineskip}
+\begin{adjustwidth}{0.5cm}{2cm}
+A nationwide hierarchical committee structure representing medical students' interests and consulting university of\nolinebreak ficials.
+\end{adjustwidth}
+
+\vspace{-0.5\baselineskip}
+\begin{itemize}
+\item \textbf{Chair of Medical School Committee} \hfill \footnotesize{Feb 2019 -- Aug 2020} \normalsize
+
+\begin{adjustwidth}{0.5cm}{2cm}
+Founder and the first chairman
+\newline Established a mentoring program
+\newline Consulted the dean on educational reforms
+\end{adjustwidth}
+
+\item \textbf{Chair of University Committee} \hfill \footnotesize{Aug 2019 -- Aug 2020} \normalsize
+
+\begin{adjustwidth}{0.5cm}{2cm}
+Coordinated student-led initiatives across faculties
+\end{adjustwidth}
+
+\item \textbf{Board Member of Private Medical Universities Convention} \hfill \footnotesize{Aug 2019 -- Aug 2020} \normalsize
+\begin{adjustwidth}{0.5cm}{2cm}
+Advocating for student-centered reforms and improvements in private medical education.
+\end{adjustwidth}
+
+\item \textbf{Member of National Confederation} \hfill \footnotesize{Aug 2019 -- Aug 2020} \normalsize
+\begin{adjustwidth}{0.5cm}{2cm}
+Participated in setting strategic educational goals.
+\end{adjustwidth}
+\end{itemize}
+
+\section{Teaching Experience}
+
+\textbf{Pre-Hospital Emergency Situation Management \& Life Support (Teacher Assistant)} (Paid)  \hfill \footnotesize{Oct 2024} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{adjustwidth}{0.5cm}{2cm}
+45-hour workshop for advanced volunteers, at \emph{Red Crescent Society (RCS)}
+\end{adjustwidth}
+
+\textbf{Theoretical and hands-on workshop for Stereotaxic Surgery of Rat Brain} (Paid) \hfill \footnotesize{Jan 2021} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{adjustwidth}{0.5cm}{0cm}
+20-hour workshop in three days, at \emph{Herbal Pharmacology Research Center of IAUTMU}
+\end{adjustwidth}
+
+
+
+\section{Awards \& Honors}
+\textbf{Appreciation letter from Dean and Manager of Education Development Of\nolinebreak fice (EDO)} \hfill \footnotesize{Aug. 2020} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{adjustwidth}{0.5cm}{2cm}
+Recognized for leadership in establishing the Student Committee of the Education Development Of\nolinebreak fice (EDO) and contributions to educational reforms.
+\end{adjustwidth}
+
+\textbf{Appreciation letter for volunteering in the “National COVID-19 Vaccination"} \hfill \footnotesize{Dec. 2021} \normalsize
+
+\textbf{Dean's list (top student) in Four Semesters} \hfill \footnotesize{Spring 2016, Fall 2017, Spring 2017, Fall 2018} \normalsize
+
+\textbf{Ranked in the top of 0.5\% in National Universities Entrance Examination:} Among 500,000 students \hfill \footnotesize{2016}  \normalsize
+
+\textbf{Top Student Researcher of Tehran}, \hypertarget{Kharazmi}{Kharazmi} Awards (Young Division) \hfill \footnotesize{2015} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{itemize}
+    \item Nominated as one of the top 16 students nationally for a project submitted to the Kharazmi Awards (Young Division).
+\end{itemize}
+
+
+\section{Skills and Software}
+
+\textbf{NGS Analysis}: NGSQCToolkit, trimmomatic, BWA, hisat2, samtools, IGV, gatk, bcftools, ANNOVAR databases
+
+\textbf{Computer and Programming} \textit{basic}: Linux (VPS), Python (including Django), MATLAB, Google Colab, R (including Bioconductor), HTML, WordPress
+
+\textbf{Writing:} Scientific writing, {\sffamily\LaTeX}\setmainfont[SmallCapsFont=Fontin SmallCaps]{Fontin-Regular}, Zotero, EndNote, Obsidian, Microsoft Office, IBM SPSS
+
+\textbf{Molecular dynamics simulation \textit{basic}:} GROMACS package, COOT, VMD
+
+\textbf{Animal neuroscience studies:} Rat brain stereotaxic surgery and dissection, Inducing and evaluating rat behavioral models, H\&E staining and tissue processing
+
+\textbf{English Proficiency:} TOEFL iBT: 96 \footnotesize (Reading=23, Listening=29, Speaking=23, Writing=21) \hfill 10/28/2023 \normalsize
+
+\section{Professional Affiliations \& Licensees}
+\textbf{Membership of Iranian Medical Council (IMC) \& National Medical License } \hfill \footnotesize{Since 2024} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{adjustwidth}{1 cm}{}
+\href{https://membersearch.irimc.org/member/profile?id=b7b9a1b7-9e08-4628-a8f8-dde64f3ea2e6}{REG NO. 217104 \faExternalLink*}
+\end{adjustwidth}
+
+
+\textbf{National Clinical Skill License} \hfill \footnotesize{Since 2022} \normalsize
+
+\textbf{International Society for Evolution, Medicine, and Public Health (ISEMPH)} \href{https://isemph.org/}{\faExternalLink*} \hfill \footnotesize{Since 2016} \normalsize
+
+\newpage
+
+\section{Volunteer Activities}
+
+\textbf{Volunteer Membership of National Red Crescent Society} \hfill \footnotesize{Since 2016} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{adjustwidth}{1 cm}{}
+Certified Technical Rescuer - General
+\end{adjustwidth}
+
+\textbf{Volunteering during COVID-19 Pandemic} \hfill \footnotesize{2021} \normalsize
+\vspace{-0.5\baselineskip}
+\begin{adjustwidth}{0.5cm}{2cm}
+Part-time volunteering as a vaccinator agent.
+\end{adjustwidth}
+
+\textbf{HIV/AIDS Activist:} As an agent of RedXir program registered in \href{https://www.unaids.org/en}{UNAIDS}.
+\space
+\href{https://www.linkedin.com/company/redxir/}{LinkedIn \faExternalLink*}
+\hfill \footnotesize{2019 - 2020} \normalsize
+
+
+% \section{Hobbies}
+% \begin{tabular}{rcl}
+% 	Reading philosophy (ethics) & Composing Persian poems & Marquetry (a fine wooden art)  \\
+% \end{tabular}
+
+
+
+
+\section{References}
+
+\begin{tabularx}{\textwidth}{X X}
+
+Mohammad \textsc{Nasehi} Ph.D.
+
+
+\begin{adjustwidth}{1 cm}{}
+\textit{Primary advisor}
+
+\href{https://scholar.google.com/citations?hl=en\&user=fMArE4kAAAAJ}{Google Scholar \faExternalLink*}
+
+\hypertarget{Nasehi}{\faEnvelope[regular]} \space  \href{mailto:nasehi@iricss.org}{Nasehi@iricss.org}
+
+\faEnvelope[regular] \space  \href{mailto:mo58na@yahoo.com}{Mo58na@yahoo.com}
+
+\faPhone* \space \href{tel:+989128224672}{+98 (912) 822-4672}
+
+\end{adjustwidth}
+
+ &
+Mandana \textsc{Hasanzad} Ph.D.
+
+\begin{adjustwidth}{1 cm}{}
+
+\href{https://www.linkedin.com/in/mandana-hasanzad-3a58706b/}{\faLinkedinIn \space Mandana Hasanzad \faExternalLink*}
+
+\hypertarget{Mandana}{\faEnvelope[regular]} \space  \href{mailto:mhasanzad@iautmu.ac.ir}{Mhasanzad@iautmu.ac.ir}
+
+\faEnvelope[regular] \space \href{mailto:mandanahasanzad@yahoo.com}{mandanahasanzad@yahoo.com}
+
+\faPhone* \space \href{tel:+989122119128}{+98 (912) 211-9128}
+
+\end{adjustwidth}
+
+\\
+
+\raggedright
+Mohammad-Reza  \textsc{Zarrindast}
+\newline Pharm.D., Ph.D.
+
+
+\begin{adjustwidth}{1 cm}{}
+\textit{Secondary advisor}
+
+\href{https://scholar.google.com/citations?user=vuFnRv0AAAAJ\&hl=en\&oi=ao}{Google Scholar \faExternalLink*}
+
+\hypertarget{Zarrindast}{\faEnvelope[regular]} \space  \href{mailto:zarinmr@ams.ac.ir}{zarinmr@ams.ac.ir}
+
+\faPhone* \space \href{tel:+989123387361}{+98 (912) 338-7361}
+
+\end{adjustwidth}
+
+&
+
+Seyed Masoud  \textsc{Arzaghi}
+\newline M.D., Psychiatrist, Psychosomatic Fellowship
+
+
+\begin{adjustwidth}{1 cm}{}
+
+\href{https://scholar.google.com/citations?hl=en\&user=fZ2eA5EAAAAJ}{Google Scholar \faExternalLink*}
+
+\hypertarget{Arzaghi}{\faEnvelope[regular]} \space  \href{mailto:dr.arzaghiiclinic@gmail.com}{dr.arzaghiiclinic@gmail.com}
+
+\faPhone* \space \href{tel:+989122970295}{+98 (912) 297-0295}
+
+\end{adjustwidth}
+
+\end{tabularx}
+
+
+\end{document}
