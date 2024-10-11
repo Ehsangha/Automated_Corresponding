@@ -1,0 +1,6 @@
+scholarly
+serpapi
+biopython
+linkedin-api
+habanero
+requests
