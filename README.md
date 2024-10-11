@@ -1,4 +1,4 @@
-# mailing
+# Professor Scraper
 
 ## How to run
 
