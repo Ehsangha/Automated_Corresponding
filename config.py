@@ -1,27 +1,23 @@
-#!/home/ehsan/anaconda3/bin/python3
-
+# config.py
 
 # API Keys
-SERPAPI_API_KEY = '0fc3a65cc2b26bb9645cba8a589df5ac50f926cfc9a1719a7dc3478b65c88205'
-LINKEDIN_EMAIL = ''
-LINKEDIN_PASSWORD = ''
-
-OPENAI_API_KEY = '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'
-
+SERPAPI_API_KEY = '976d474c8af3e91139e205333918849e95010795cb5535631f1ec0edd6de1f48'
+LINKEDIN_EMAIL = 'ghavimehr'
+LINKEDIN_PASSWORD = ';hlfd,jv'
+OPENAI_API_KEY = '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'
 ORCID_CLIENT_ID = 'APP-PPC15PE7WPU5RMYL'
 ORCID_CLIENT_SECRET = 'e3f50710-712c-43ac-8a70-94cfe55c4434'
-
-# Other configurations
 ENTREZ_EMAIL = 'ehsanghavimehr@gmail.com'
+
 
 # Database and Project Configurations
 DB_FILE = 'main.db'                     # Default database file
-TABLE_NAME = 'cognitive_psychology'      # Default table name
-SEARCH_DEPTH = 1                         # Default search depth
-PROJECT_DIRECTORY = '/home/ehsan/usr/mailling_list'  # Default project directory
+TABLE_NAME = 'neuro'      # Default table name
+SEARCH_DEPTH = 0                         # Default search depth
+PROJECT_DIRECTORY = '/home/ehsan/usr/automated_corresponding'  # Default project directory
 
 # Search Style (if applicable)
-SEARCH_STYLE = 'breadth-first'           # or 'depth-first'
+SEARCH_STYLE = 1           # or 'depth-first'
 
 # Reminder Intervals
 REMINDER_INTERVAL_1 = 7    # days until first reminder
@@ -31,36 +27,48 @@ REMINDER_INTERVAL_3 = 21   # days until third reminder
 # Email Settings
 EMAIL_ACCOUNTS = [
     {
-        'from_email': 'ehsan@ghavimehr.com',
-        'username': 'ehsan@ghavimehr.com',
-        'password': '',
-        'host': 'smtp.hostinger.com',  # Hostinger's SMTP server
-        'port': 465,  # Typically 465 for SSL
-        'use_ssl': True,
-        'imap_host': 'imap.hostinger.com',  # Hostinger's IMAP server
-        'imap_port': 993,  # Typically 993 for SSL
+        "from_email": 'eh.ghavimehr@gmail.com',
+        "username": 'eh.ghavimehr@gmail.com',
+        "password": 'dbugdhtzsrvqinpp',
+        "smtp_host": 'smtp.google.com',
+        "smtp_port": 465,
+        "imap_host": 'imap.google.com', 
+        "imap_port": 993,
+        "ssl": True,
     },
-    # You can add more email accounts here
+    {
+        "from_email": 'E.Ghavimehr@gmail.com',
+        "username": 'E.Ghavimehr@gmail.com',
+        "password": 'kmaloqwfjdxtnjxi',
+        "smtp_host": 'smtp.google.com',
+        "smtp_port": 465,
+        "imap_host": 'imap.google.com', 
+        "imap_port": 993,
+        "ssl": True,
+    },
+    {
+        "from_email": 'ehsan@ghavimehr.com',
+        "username": 'ehsan@ghavimehr.com',
+        "password": 'Now;hlfd,jv1',
+        "smtp_host": 'smtp.hostinger.com',
+        "smtp_port": 465,
+        "imap_host": 'imap.hostinger.com', 
+        "imap_port": 993,
+        "ssl": True,
+    },
 ]
 
-SENDING_METHOD = 1
-
 # Test Run Configuration
-TEST_RUN = True  # If True, emails will be sent to TEST_EMAIL instead of the professor's real emails
+TEST_RUN = False  # If True, emails will be sent to TEST_EMAIL instead of the professor's real emails
 TEST_EMAIL = 'ehsanghavimehr@gmail.com'
 
-# OpenAI Configuration
-# OpenAI Configuration for Summarization
-OPENAI_SUMMARY_MAX_TOKENS = 1000
-OPENAI_SUMMARY_TEMPERATURE = 0.3
+SENDING_METHOD = 'smtp'  
 
-# OpenAI Configuration for Paragraph Generation
-OPENAI_PARAGRAPH_MAX_TOKENS = 125
-OPENAI_PARAGRAPH_TEMPERATURE = 0.5
 
-# OpenAI Configuration for Keywords Generation
-OPENAI_KEYWORDS_MAX_TOKENS = 35
-OPENAI_KEYWORDS_TEMPERATURE = 0.2
+# Temperature and max tokens for email generation
+EMAIL_PERSONALIZED_PARAGRAPH_TEMPERATURE = 0.3
+EMAIL_PERSONALIZED_PARAGRAPH_MAX_TOKENS = 250
 
-# Answer State (assuming initial state is 0)
-ANSWER_STATE = 0  # 0: 'No response yet'
+# Temperature and max tokens for CV modification
+CV_RESEARCH_INTEREST_TEMPERATURE = 0.3
+CV_RESEARCH_INTEREST_MAX_TOKENS = 100

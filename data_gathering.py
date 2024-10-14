@@ -1,257 +1,312 @@
-#!/home/ehsan/anaconda3/bin/python3
+# data_gathering.py
 
-import sqlite3
 import os
+import sqlite3
+import requests
+from urllib.parse import urljoin, urlparse
+from bs4 import BeautifulSoup
+import re
 import json
-import logging
+import time
+import random
+from config import (
+    SEARCH_DEPTH,
+    SEARCH_STYLE,
+    SERPAPI_API_KEY,
+    ENTREZ_EMAIL,
+    ORCID_CLIENT_ID,
+    ORCID_CLIENT_SECRET
+)
+import datetime
+
+# Import the libraries
 from scholarly import scholarly
 from serpapi import GoogleSearch
 from Bio import Entrez
-from linkedin_api import Linkedin
 from habanero import Crossref
-import requests
-from datetime import datetime
-from config import (
-    SERPAPI_API_KEY,
-    LINKEDIN_EMAIL,
-    LINKEDIN_PASSWORD,
-    ORCID_CLIENT_ID,
-    ORCID_CLIENT_SECRET,
-    DB_FILE,
-    TABLE_NAME,
-    PROJECT_DIRECTORY,
-    SEARCH_DEPTH
-)
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-# Initialize Crossref
-cr = Crossref()
-
-def main(db_file, table_name, project_directory, search_depth, professor_id):
+def main(db_file, table_name, project_directory, search_depth, professor_id=None):
     conn = sqlite3.connect(db_file)
-    conn.execute('PRAGMA foreign_keys = ON;')
     cursor = conn.cursor()
 
-    # Fetch professor details using professor_id
-    cursor.execute(f'''
-        SELECT "Professor", "University", "Email", "Website"
-        FROM "{table_name}"
-        WHERE "ID" = ?
-    ''', (professor_id,))
-    result = cursor.fetchone()
-    if not result:
-        logging.error(f"No professor found with ID {professor_id}")
-        conn.close()
-        return
+    # Fetch professor details
+    if professor_id:
+        cursor.execute(f"""
+            SELECT "ID", "Professor", "Webpage"
+            FROM "{table_name}"
+            WHERE "ID" = ?
+        """, (professor_id,))
+        professors = cursor.fetchall()
+    else:
+        cursor.execute(f"""
+            SELECT "ID", "Professor", "Webpage"
+            FROM "{table_name}"
+        """)
+        professors = cursor.fetchall()
 
-    professor_name, university, email, website = result
+    for professor in professors:
+        prof_id, professor_name, webpage_url = professor
+        print(f"Gathering data for Professor ID {prof_id}: {professor_name}")
 
-    # Log the fetched data
-    logging.info(f"Professor ID: {professor_id}")
-    logging.info(f"Professor Name: {professor_name}")
-    logging.info(f"University: {university}")
-    logging.info(f"Email: {email}")
-    logging.info(f"Website: {website}")
+        # Create a directory for the professor
+        safe_professor_name = ''.join(c if c.isalnum() else '_' for c in professor_name)
+        professor_dir = os.path.join(project_directory, 'data', safe_professor_name)
+        os.makedirs(professor_dir, exist_ok=True)
 
-    # Create a safe directory name for the professor
-    safe_professor_name = ''.join(c if c.isalnum() else '_' for c in professor_name)
-    professor_dir = os.path.join(project_directory, 'data', safe_professor_name)
-    os.makedirs(professor_dir, exist_ok=True)
+        # Initialize data dictionary
+        professor_data = {
+            'scholarly': {},
+            'serpapi': {},
+            'entrez': {},
+            'crossref': {},
+            'orcid': {}
+        }
 
-    # Gather data from various sources
-    professor_data = gather_professor_data(professor_name)
+        # Fetch and save the professor's main webpage
+        if webpage_url:
+            try:
+                response = requests.get(webpage_url)
+                response.raise_for_status()
+                main_page_content = response.text
 
-    # Save the gathered data to a JSON file
-    data_file = os.path.join(professor_dir, 'professor_data.json')
-    with open(data_file, 'w', encoding='utf-8') as f:
-        json.dump(professor_data, f, ensure_ascii=False, indent=4)
-    logging.info(f"Professor data saved to {data_file}")
+                main_page_file = os.path.join(professor_dir, 'main_page.html')
+                with open(main_page_file, 'w', encoding='utf-8') as f:
+                    f.write(main_page_content)
+                print(f"Saved main webpage for {professor_name}")
 
-    # Close the database connection
+                # Determine search style
+                if SEARCH_STYLE == 1:
+                    # Breadth-First Search
+                    fetch_links_bfs(webpage_url, professor_dir, search_depth)
+                elif SEARCH_STYLE == 2:
+                    # Depth-First Search
+                    fetch_links_dfs(webpage_url, professor_dir, search_depth)
+                else:
+                    print(f"Invalid SEARCH_STYLE: {SEARCH_STYLE}")
+            except requests.RequestException as e:
+                print(f"Failed to fetch webpage for {professor_name}: {e}")
+        else:
+            print(f"No webpage URL provided for {professor_name}")
+
+        # Add a small delay to avoid overwhelming servers
+        time.sleep(random.uniform(1, 3))
+
+        # Gather additional data using the libraries
+        try:
+            # 1. Use scholarly to get author profile and publications
+            search_query = scholarly.search_author(professor_name)
+            author = next(search_query, None)
+            if author and author['name'].lower() == professor_name.lower():
+                author = scholarly.fill(author)
+                professor_data['scholarly'] = author
+                print(f"Retrieved scholarly data for {professor_name}")
+            else:
+                print(f"No exact match found in scholarly data for {professor_name}")
+        except Exception as e:
+            print(f"Error fetching scholarly data for {professor_name}: {e}")
+
+        try:
+            # 2. Use serpapi to perform a Google search
+            params = {
+                "api_key": SERPAPI_API_KEY,
+                "engine": "google",
+                "q": professor_name,
+                "location": "United States"
+            }
+            search = GoogleSearch(params)
+            results = search.get_dict()
+            professor_data['serpapi'] = results
+            print(f"Retrieved serpapi data for {professor_name}")
+        except Exception as e:
+            print(f"Error fetching serpapi data for {professor_name}: {e}")
+
+        try:
+            # 3. Use Entrez to search for publications in PubMed
+            Entrez.email = ENTREZ_EMAIL  # Required by NCBI
+            handle = Entrez.esearch(db="pubmed", term=f'"{professor_name}"[Author]', retmax=5)
+            record = Entrez.read(handle)
+            id_list = record["IdList"]
+            publications = []
+            for pubmed_id in id_list:
+                handle = Entrez.efetch(db="pubmed", id=pubmed_id, rettype="abstract", retmode="text")
+                abstract = handle.read()
+                publications.append({'pubmed_id': pubmed_id, 'abstract': abstract})
+            professor_data['entrez'] = publications
+            print(f"Retrieved PubMed data for {professor_name}")
+        except Exception as e:
+            print(f"Error fetching Entrez data for {professor_name}: {e}")
+
+        try:
+            # 4. Use Crossref to search for publications
+            cr = Crossref()
+            works = cr.works(query_author=professor_name, limit=5)
+            # Filter results to include only exact author name matches
+            exact_works = []
+            for item in works['message']['items']:
+                authors = item.get('author', [])
+                for author in authors:
+                    author_name = f"{author.get('given', '')} {author.get('family', '')}".strip()
+                    if author_name.lower() == professor_name.lower():
+                        exact_works.append(item)
+                        break
+            professor_data['crossref'] = exact_works
+            print(f"Retrieved Crossref data for {professor_name}")
+        except Exception as e:
+            print(f"Error fetching Crossref data for {professor_name}: {e}")
+
+        try:
+            # 5. Use ORCID to fetch author data
+            orcid_data = fetch_orcid_data(professor_name)
+            if orcid_data:
+                professor_data['orcid'] = orcid_data
+                print(f"Retrieved ORCID data for {professor_name}")
+            else:
+                print(f"No ORCID data found for {professor_name}")
+        except Exception as e:
+            print(f"Error fetching ORCID data for {professor_name}: {e}")
+
+        # Save the collected data to a JSON file
+        data_file = os.path.join(professor_dir, 'professor_data.json')
+        with open(data_file, 'w', encoding='utf-8') as f:
+            json.dump(professor_data, f, indent=4)
+        print(f"Saved professor data to {data_file}")
+
     conn.close()
 
-def gather_professor_data(professor_name):
-    data = {}
+def fetch_orcid_data(professor_name):
+    # ORCID API endpoint for searching
+    search_url = 'https://pub.orcid.org/v3.0/search/'
 
-    # Google Scholar
-    data['Google Scholar'] = search_google_scholar(professor_name)
-
-    # SerpApi Google Scholar
-    data['SerpApi Google Scholar'] = search_serpapi_google_scholar(professor_name)
-
-    # PubMed
-    data['PubMed'] = search_pubmed(professor_name)
-
-    # LinkedIn
-    data['LinkedIn'] = search_linkedin(professor_name)
-
-    # CrossRef
-    data['CrossRef'] = search_crossref(professor_name)
-
-    # Semantic Scholar
-    data['Semantic Scholar'] = search_semantic_scholar(professor_name)
-
-    # ORCID
-    data['ORCID'] = search_orcid(professor_name)
-
-    return data
-
-def search_google_scholar(professor_name):
-    try:
-        search_query = scholarly.search_author(professor_name)
-        author = next(search_query, None)
-        if author:
-            author = scholarly.fill(author)  # Fetch publications
-            publications = []
-            for pub in author.get('publications', []):
-                pub_filled = scholarly.fill(pub)
-                publications.append({
-                    'title': pub_filled.get('bib', {}).get('title'),
-                    'year': pub_filled.get('bib', {}).get('pub_year'),
-                    'abstract': pub_filled.get('bib', {}).get('abstract'),
-                    'url': pub_filled.get('bib', {}).get('url'),
-                    'citation_count': pub_filled.get('num_citations')
-                })
-            return publications
-        else:
-            logging.info(f"No Google Scholar profile found for {professor_name}")
-    except Exception as e:
-        logging.error(f"Google Scholar search error: {e}")
-    return []
-
-def search_serpapi_google_scholar(professor_name):
-    params = {
-        "engine": "google_scholar",
-        "q": professor_name,
-        "api_key": SERPAPI_API_KEY
+    headers = {
+        'Accept': 'application/json'
     }
-    try:
-        search = GoogleSearch(params)
-        results = search.get_dict()
-        publications = []
-        for result in results.get("organic_results", []):
-            publications.append({
-                'title': result.get('title'),
-                'snippet': result.get('snippet'),
-                'publication_year': result.get('publication_year'),
-                'link': result.get('link'),
-                'citations': result.get('citations', {}).get('total')
-            })
-        return publications
-    except Exception as e:
-        logging.error(f"SerpAPI error: {e}")
-    return []
 
-def search_pubmed(professor_name):
-    Entrez.email = "ehsanghavimehr@gmail.com"  # Required by NCBI
-    try:
-        handle = Entrez.esearch(db="pubmed", term=professor_name, retmax=10)
-        record = Entrez.read(handle)
-        pmids = record['IdList']
-        if pmids:
-            handle = Entrez.efetch(db="pubmed", id=pmids, rettype="abstract", retmode="text")
-            abstracts = handle.read()
-            return abstracts
+    # Query to search for the exact name
+    query = f'(given-names:"{professor_name}" OR family-name:"{professor_name}")'
+
+    params = {
+        'q': query
+    }
+
+    response = requests.get(search_url, headers=headers, params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+        if 'result' in data:
+            for item in data['result']:
+                orcid_id = item['orcid-identifier']['path']
+                # Fetch detailed profile data
+                profile_url = f'https://pub.orcid.org/v3.0/{orcid_id}/record'
+                profile_response = requests.get(profile_url, headers=headers)
+                if profile_response.status_code == 200:
+                    profile_data = profile_response.json()
+                    # Verify exact name match
+                    personal_details = profile_data.get('person', {}).get('name', {})
+                    given_names = personal_details.get('given-names', {}).get('value', '').lower()
+                    family_name = personal_details.get('family-name', {}).get('value', '').lower()
+                    full_name = f"{given_names} {family_name}".strip()
+                    if full_name == professor_name.lower():
+                        return profile_data
         else:
-            logging.info(f"No PubMed results for {professor_name}")
-    except Exception as e:
-        logging.error(f"PubMed search error: {e}")
-    return ""
+            return None
+    else:
+        print(f"ORCID API request failed with status code {response.status_code}")
+        return None
 
-def search_linkedin(professor_name):
+def fetch_links_bfs(base_url, professor_dir, max_depth):
+    visited = set()
+    queue = [(base_url, 0)]
+
+    while queue:
+        current_url, depth = queue.pop(0)
+        if depth > max_depth or current_url in visited:
+            continue
+
+        visited.add(current_url)
+        try:
+            response = requests.get(current_url)
+            response.raise_for_status()
+            content = response.text
+
+            # Save the page content
+            filename = get_safe_filename(current_url)
+            filepath = os.path.join(professor_dir, filename)
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write(content)
+            print(f"Saved page: {current_url}")
+
+            if depth < max_depth:
+                soup = BeautifulSoup(content, 'html.parser')
+                links = soup.find_all('a', href=True)
+
+                for link in links:
+                    href = link['href']
+                    href = urljoin(current_url, href)
+                    parsed_href = urlparse(href)
+                    href = parsed_href.scheme + '://' + parsed_href.netloc + parsed_href.path
+
+                    # Check if the link is on the same domain
+                    if urlparse(href).netloc != urlparse(base_url).netloc:
+                        continue
+
+                    if href not in visited:
+                        queue.append((href, depth + 1))
+
+            # Add a small delay
+            time.sleep(random.uniform(0.5, 1.5))
+        except requests.RequestException as e:
+            print(f"Failed to fetch link {current_url}: {e}")
+
+def fetch_links_dfs(base_url, professor_dir, max_depth, visited=None, depth=0):
+    if depth > max_depth:
+        return
+    if visited is None:
+        visited = set()
+
+    if base_url in visited:
+        return
+
+    visited.add(base_url)
+
     try:
-        api = Linkedin(LINKEDIN_EMAIL, LINKEDIN_PASSWORD)
-        people = api.search_people(keywords=professor_name, limit=1)
-        if people:
-            profile = people[0]
-            return {
-                'name': profile.get('public_id'),
-                'occupation': profile.get('occupation'),
-                'location': profile.get('locationName'),
-                'profile_url': f"https://www.linkedin.com/in/{profile.get('public_id')}"
-            }
-        else:
-            logging.info(f"No LinkedIn profile found for {professor_name}")
-    except Exception as e:
-        logging.error(f"LinkedIn search error: {e}")
-    return {}
+        response = requests.get(base_url)
+        response.raise_for_status()
+        content = response.text
 
-def search_crossref(professor_name):
-    try:
-        works = cr.works(query=professor_name, limit=10)
-        items = works['message']['items']
-        publications = []
-        for item in items:
-            publications.append({
-                'title': item.get('title')[0] if item.get('title') else '',
-                'author': [author.get('given') + ' ' + author.get('family') for author in item.get('author', [])],
-                'year': item.get('published-print', {}).get('date-parts', [[None]])[0][0],
-                'journal': item.get('container-title')[0] if item.get('container-title') else '',
-                'doi': item.get('DOI'),
-                'URL': item.get('URL')
-            })
-        return publications
-    except Exception as e:
-        logging.error(f"CrossRef search error: {e}")
-    return []
+        # Save the page content
+        filename = get_safe_filename(base_url)
+        filepath = os.path.join(professor_dir, filename)
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(content)
+        print(f"Saved page: {base_url}")
 
-def search_semantic_scholar(professor_name):
-    try:
-        url = f"https://api.semanticscholar.org/graph/v1/author/search?query={professor_name}&limit=1"
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            if data['data']:
-                author_id = data['data'][0]['authorId']
-                papers_url = f"https://api.semanticscholar.org/graph/v1/author/{author_id}/papers?limit=10&fields=title,year,abstract,externalIds"
-                papers_response = requests.get(papers_url)
-                if papers_response.status_code == 200:
-                    papers_data = papers_response.json()
-                    papers = []
-                    for paper in papers_data.get('data', []):
-                        papers.append({
-                            'title': paper.get('title'),
-                            'year': paper.get('year'),
-                            'abstract': paper.get('abstract'),
-                            'doi': paper.get('externalIds', {}).get('DOI')
-                        })
-                    return papers
-        logging.info(f"No Semantic Scholar profile found for {professor_name}")
-    except Exception as e:
-        logging.error(f"Semantic Scholar search error: {e}")
-    return []
+        if depth < max_depth:
+            soup = BeautifulSoup(content, 'html.parser')
+            links = soup.find_all('a', href=True)
 
-def search_orcid(professor_name):
-    try:
-        url = f"https://pub.orcid.org/v3.0/search/?q={professor_name}"
-        headers = {"Accept": "application/json"}
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            data = response.json()
-            if data.get('result'):
-                return data['result']
-        logging.info(f"No ORCID profile found for {professor_name}")
-    except Exception as e:
-        logging.error(f"ORCID search error: {e}")
-    return []
+            for link in links:
+                href = link['href']
+                href = urljoin(base_url, href)
+                parsed_href = urlparse(href)
+                href = parsed_href.scheme + '://' + parsed_href.netloc + parsed_href.path
 
-if __name__ == '__main__':
-    import argparse
+                # Check if the link is on the same domain
+                if urlparse(href).netloc != urlparse(base_url).netloc:
+                    continue
 
-    parser = argparse.ArgumentParser(description='Data Gathering Script')
-    parser.add_argument('-i', '--input', help='SQLite database file.')
-    parser.add_argument('-t', '--table-name', help='Name of the table in the database.')
-    parser.add_argument('-d', '--search-depth', type=int, help='Depth of the link search.')
-    parser.add_argument('-p', '--project-directory', help='Project directory for storing data.')
-    parser.add_argument('-pid', '--professor-id', type=int, required=True, help='Professor ID to gather data for.')
-    args = parser.parse_args()
+                fetch_links_dfs(href, professor_dir, max_depth, visited, depth + 1)
 
-    db_file = args.input if args.input else DB_FILE
-    table_name = args.table_name if args.table_name else TABLE_NAME
-    project_directory = args.project_directory if args.project_directory else PROJECT_DIRECTORY
-    search_depth = args.search_depth if args.search_depth else SEARCH_DEPTH
-    professor_id = args.professor_id
+        # Add a small delay
+        time.sleep(random.uniform(0.5, 1.5))
+    except requests.RequestException as e:
+        print(f"Failed to fetch link {base_url}: {e}")
 
-    main(db_file, table_name, project_directory, search_depth, professor_id)
+def get_safe_filename(url):
+    # Create a safe filename from the URL
+    parsed_url = urlparse(url)
+    path = parsed_url.path.strip('/')
+    if not path:
+        path = 'index'
+    safe_path = re.sub(r'[^a-zA-Z0-9_\-]', '_', path)
+    filename = f"{safe_path}.html"
+    return filename
