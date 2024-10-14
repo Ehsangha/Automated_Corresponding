@@ -14,7 +14,7 @@ ENTREZ_EMAIL = 'your_email'
 DB_FILE = 'main.db'                     # Default database file
 TABLE_NAME = 'neuro'      # Default table name
 SEARCH_DEPTH = 0                         # Default search depth
-PROJECT_DIRECTORY = '/home/ehsan/usr/automated_corresponding'  # Default project directory
+PROJECT_DIRECTORY = 'path/to/automated_corresponding'  # Default project directory
 
 # Search Style (if applicable)
 SEARCH_STYLE = 1           # or 'depth-first'
@@ -27,9 +27,9 @@ REMINDER_INTERVAL_3 = 21   # days until third reminder
 # Email Settings
 EMAIL_ACCOUNTS = [
     {
-        "from_email": 'eh.ghavimehr@gmail.com',
-        "username": 'eh.ghavimehr@gmail.com',
-        "password": 'dbugdhtzsrvqinpp',
+        "from_email": 'your_email',
+        "username": 'your_email',
+        "password": 'your_pass',
         "smtp_host": 'smtp.google.com',
         "smtp_port": 465,
         "imap_host": 'imap.google.com', 
@@ -37,9 +37,9 @@ EMAIL_ACCOUNTS = [
         "ssl": True,
     },
     {
-        "from_email": 'E.Ghavimehr@gmail.com',
-        "username": 'E.Ghavimehr@gmail.com',
-        "password": 'kmaloqwfjdxtnjxi',
+        "from_email": 'your_email',
+        "username": 'your_email',
+        "password": 'your_pass',
         "smtp_host": 'smtp.google.com',
         "smtp_port": 465,
         "imap_host": 'imap.google.com', 
@@ -47,20 +47,20 @@ EMAIL_ACCOUNTS = [
         "ssl": True,
     },
     {
-        "from_email": 'ehsan@ghavimehr.com',
-        "username": 'ehsan@ghavimehr.com',
-        "password": 'Now;hlfd,jv1',
-        "smtp_host": 'smtp.hostinger.com',
+        "from_email": 'your_email',
+        "username": 'your_email',
+        "password": 'your_pass',
+        "smtp_host": 'smtp.provider.com',
         "smtp_port": 465,
-        "imap_host": 'imap.hostinger.com', 
+        "imap_host": 'imap.provider.com', 
         "imap_port": 993,
         "ssl": True,
     },
 ]
 
 # Test Run Configuration
-TEST_RUN = False  # If True, emails will be sent to TEST_EMAIL instead of the professor's real emails
-TEST_EMAIL = 'ehsanghavimehr@gmail.com'
+TEST_RUN = True  # If True, emails will be sent to TEST_EMAIL instead of the professor's real emails
+TEST_EMAIL = 'your_email'
 
 SENDING_METHOD = 'smtp'  
 
